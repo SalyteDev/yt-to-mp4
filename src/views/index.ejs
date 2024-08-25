@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube to MP4 Converter</title>
+    <link rel="stylesheet" href="/styles.css"> 
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube to MP4 Converter</h1>
+        <form id="convertForm">
+            <label for="url">Enter YouTube URL:</label>
+            <input type="url" id="url" name="url" required>
+            <button type="submit">Convert</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('convertForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = document.getElementById('url').value;
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = '<p>Converting, please wait...</p>';
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.innerHTML = `<p>Conversion complete. Download your video <a href="${data.downloadUrl}" download>here</a>.</p>`;
+                } else {
+                    messageDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            } catch (error) {e
+                messageDiv.innerHTML = `<p>An error occurred: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
